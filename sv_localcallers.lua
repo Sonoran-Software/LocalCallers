@@ -25,7 +25,7 @@ CreateThread(function() Config.LoadPlugin("localcallers", function(pluginConfig)
                 ['description'] = message,
                 ['metaData'] = {
                     ['callerPlayerId'] = source,
-                    ['callerApiId'] = GetIdentifiers(source)[Config.primaryIdentifier],
+                    ['callerCommunityUserId'] = GetPlayerCommunityUserId(source),
                     ['postal'] = postal
                 }
             }

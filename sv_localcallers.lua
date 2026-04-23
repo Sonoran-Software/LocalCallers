@@ -18,34 +18,36 @@ CreateThread(function() Config.LoadPlugin("localcallers", function(pluginConfig)
                 postal = "Unknown"
             end
             local data = {
-                ['serverId'] = Config.serverId,
+                ['serverId'] = tonumber(tonumber(Config.serverId)),
                 ['isEmergency'] = true,
                 ['caller'] = pluginConfig.language.caller,
                 ['location'] = street,
                 ['description'] = message,
                 ['metaData'] = {
-                    ['callerPlayerId'] = source,
-                    ['callerCommunityUserId'] = GetPlayerCommunityUserId(source),
-                    ['postal'] = postal
+                    ['callerPlayerId'] = tostring(source),
+                    ['callerCommunityUserId'] = tostring(GetPlayerCommunityUserId(source)),
+                    ['postal'] = tostring(postal)
                 }
             }
             if pluginConfig.clearRecordsAfter ~= 0 then
                 data.deleteAfterMinutes = pluginConfig.clearRecordsAfter
             end
             if LocationCache[source] ~= nil then
-                data['metaData']['x'] = LocationCache[source].coordinates.x
-                data['metaData']['y'] = LocationCache[source].coordinates.y
-                data['metaData']['z'] = LocationCache[source].coordinates.z
+                data['metaData']['x'] = tostring(LocationCache[source].coordinates.x)
+                data['metaData']['y'] = tostring(LocationCache[source].coordinates.y)
+                data['metaData']['z'] = tostring(LocationCache[source].coordinates.z)
             elseif type(coords) == "vector3" then
-                data['metaData']['x'] = coords.x
-                data['metaData']['y'] = coords.y
-                data['metaData']['z'] = coords.z
+                data['metaData']['x'] = tostring(coords.x)
+                data['metaData']['y'] = tostring(coords.y)
+                data['metaData']['z'] = tostring(coords.z)
             else
                 debugLog("Warning: location cache was nil, not sending position")
             end
             debugLog("sending call!")
-            performApiRequest({data}, 'CALL_911', function(response)
-            end)
+            local response = CadApiCreateEmergencyCall(data)
+            if not response.success then
+                CadApiLogFailure("CALL_911", response, data)
+            end
         end)
     end
 end) end)
